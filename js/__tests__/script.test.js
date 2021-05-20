@@ -4,7 +4,7 @@ const html = fs.readFileSync(path.resolve(__dirname, '../../index.html'), 'utf8'
 
 // must load document here, or else import below will fail
 document.documentElement.innerHTML = html.toString();
-const galleryScript = require("../main/script");
+const Gallery = require("../main/script");
 
 beforeEach(() => {
     document.innerHTML = html.toString();
@@ -15,7 +15,7 @@ afterEach(() => {
     document.innerHTML = "";
 });
 
-describe('galleryScript.fetchProfile', () => {
+describe('Gallery.fetchProfile', () => {
 
     beforeEach(() => {
         fetchMock.doMock();
@@ -27,6 +27,7 @@ describe('galleryScript.fetchProfile', () => {
     })
 
     it('calls API and returns data', () => {
+        const gallery = new Gallery();
         fetch.mockResponseOnce({
             "login": "octocat",
             "id": 1,
@@ -36,7 +37,7 @@ describe('galleryScript.fetchProfile', () => {
             "url": "https://api.github.com/users/octocat",
             "html_url": "https://github.com/octocat"
         });
-        galleryScript.fetchProfile().then(res => {
+        gallery.fetchProfile().then(res => {
             expect(res).toEqual({
                 "login": "octocat",
                 "id": 1,

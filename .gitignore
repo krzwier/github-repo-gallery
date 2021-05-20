@@ -3,5 +3,6 @@ Thumbs.db
 .eslintrc.json
 package-lock.json
 
+coverage/
 node_modules/
 authentication.js
