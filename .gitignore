@@ -2,7 +2,6 @@
 Thumbs.db
 .eslintrc.json
 package-lock.json
-package.json
 
 node_modules/
 authentication.js
