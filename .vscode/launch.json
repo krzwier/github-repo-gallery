@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Debug Jest Tests",
+            "type": "node",
+            "request": "launch",
+            "runtimeArgs": [
+                "--inspect-brk",
+                "${workspaceRoot}/node_modules/.bin/jest",
+                "--runInBand"
+            ],
+            "console": "integratedTerminal",
+            "port": 9229
+        },
+   
+        {
+            "type": "pwa-chrome",
+            "name": "file:///Users/krzwier/Dropbox/GitHub/github-repo-gallery/index.html",
+            "request": "launch",
+            "url": "file:///Users/krzwier/Dropbox/GitHub/github-repo-gallery/index.html"
+        }
+    ]
+}
