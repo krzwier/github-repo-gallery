@@ -211,6 +211,49 @@ describe('displayRepoList(repoData)', () => {
 });
 
 
+describe('fetchRepoInfo', () => {
+
+    beforeEach(() => {
+        fetch.resetMocks();
+    });
+
+    it('calls two API endpoints and returns correct data', async () => {
+        fetch.mockResponses(
+            [
+                JSON.stringify({
+                    "id": 1296269,
+                    "node_id": "MDEwOlJlcG9zaXRvcnkxMjk2MjY5",
+                    "name": "Hello-World",
+                    "default_branch": "master",
+                    "languages_url": "https://api.github.com/repos/octocat/Hello-World-Template/languages",
+                    "html_url": "https://github.com/octocat/Hello-World-Template"
+                }),
+                { status: 200 }
+            ],
+            [
+                JSON.stringify({
+                    "C": 78769,
+                    "Python": 7769
+                }),
+                { status: 200 }
+            ]
+        );
+
+        const returnedData = await gallery.fetchRepoInfo("Hello-World");
+        expect(returnedData.repoInfo).toEqual({
+            "id": 1296269,
+            "node_id": "MDEwOlJlcG9zaXRvcnkxMjk2MjY5",
+            "name": "Hello-World",
+            "default_branch": "master",
+            "languages_url": "https://api.github.com/repos/octocat/Hello-World-Template/languages",
+            "html_url": "https://github.com/octocat/Hello-World-Template"
+        });
+        expect(returnedData.languages).toEqual(["C", "Python"]);
+
+    });
+
+});
+
 describe('Clicking on a repo', () => {
 
     it('unhides repo data and hides repo list', async () => {
@@ -233,7 +276,7 @@ describe('Clicking on a repo', () => {
                 "default_branch": "master"
             }];
         gallery.displayRepoList(repoList);
-        
+
         // act
         const repoTitle = document.querySelector(".repo-list>li>h3");
         repoTitle.click();
@@ -244,8 +287,49 @@ describe('Clicking on a repo', () => {
             const repos = document.querySelector(".repos");
             expect(repoData.classList).not.toContain("hide");
             expect(repos.classList).toContain("hide");
-        }, 1000);           
+        }, 1000);
 
     });
 
 });
+
+describe('Clicking on area in repo-list but outside repo', () => {
+
+    it('does nothing', async () => {
+        // arrange
+        const repoList = [
+            {
+                "id": 369255294,
+                "name": "github-repo-gallery",
+                "owner": {
+                    "login": "krzwier",
+                },
+                "default_branch": "main"
+            },
+            {
+                "id": 260126754,
+                "name": "ezoo",
+                "owner": {
+                    "login": "krzwier",
+                },
+                "default_branch": "master"
+            }];
+        gallery.displayRepoList(repoList);
+
+        // act
+        const repoListUL = document.querySelector(".repo-list");
+        repoListUL.click();
+
+        // assert after waiting for click event to propagate
+        setTimeout(() => {
+            const repoData = document.querySelector(".repo-data");
+            const repos = document.querySelector(".repos");
+            expect(repoData.classList).toContain("hide");
+            expect(repos.classList).not.toContain("hide");
+        }, 1000);
+
+    });
+
+
+});
+

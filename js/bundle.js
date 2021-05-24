@@ -93,6 +93,7 @@ const fetchRepoInfo = async function (repoName) {
         languages.push(language);
     }
     displayRepoInfo(repoInfo, languages);
+    return { repoInfo, languages };
 };
 
 const displayRepoInfo = function (repoInfo, languages) {
@@ -116,7 +117,8 @@ module.exports = {
     fetchProfile,
     displayProfile,
     fetchRepoList,
-    displayRepoList
+    displayRepoList,
+    fetchRepoInfo
 };
 
 },{}],2:[function(require,module,exports){
