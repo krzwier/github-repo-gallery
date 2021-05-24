@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    
+
     window.document.documentElement.innerHTML = "";
 });
 
@@ -207,6 +207,34 @@ describe('displayRepoList(repoData)', () => {
         const listItem = window.document.querySelector(".repo-list>li");
         expect(listItem.textContent).toBe("github-repo-gallery");
     });
+});
 
+describe('Clicking on a repo', () => {
+
+    it('displays repo info', () => {
+        const repoData = [
+            {
+                "id": 369255294,
+                "name": "github-repo-gallery",
+                "owner": {
+                    "login": "krzwier",
+                },
+                "default_branch": "main"
+            },
+            {
+                "id": 260126754,
+                "name": "ezoo",
+                "owner": {
+                    "login": "krzwier",
+                },
+                "default_branch": "master"
+            }];
+        gallery.displayRepoList(repoData);
+        const repo = document.querySelector(".repo-list>li");
+        repo.click();
+
+            // TEST INCOMPLETE: MUST WRITE EXPECT STATEMENT!
+
+    });
 
 });

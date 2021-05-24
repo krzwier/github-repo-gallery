@@ -3,11 +3,15 @@ const overview = document.querySelector('.overview');
 
 const repoList = document.querySelector('.repo-list');
 
+const repos = document.querySelector('.repos');
+
+const repoData = document.querySelector('.repo-data');
+
 const username = "krzwier";
 
 const fetchProfile = async function (username) {
     try {
-        const data = await fetch(`https://api.github.com/users/${username}`, {
+        const data = await fetch('https://api.github.com/users/' + username, {
             headers: {
                 Accept: 'application/vnd.github.v3+json'
             }
@@ -40,7 +44,7 @@ const displayProfile = function (userData) {
 
 const fetchRepoList = async function (username) {
     try {
-        const data = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&direction=ascending&per_page=100`, {
+        const data = await fetch('https://api.github.com/users/' + username + '/repos?sort=updated&direction=ascending&per_page=100', {
             headers: {
                 'Accept': 'application/vnd.github.v3+json'
             }
@@ -64,9 +68,46 @@ const displayRepoList = function (repoData) {
 
 }
 
+repoList.addEventListener("click", async function (e) {
+    if (e.target.matches("h3")) {
+        const repoName = e.target.textContent;
+        await fetchRepoInfo(repoName);
+    }
+})
 
-// fetchProfile(username);
-// fetchRepoList(username);
+const fetchRepoInfo = async function (repoName) {
+    const data = await fetch('https://api.github.com/repos/' + username + '/' + repoName, {
+        headers: {
+            Accept: 'application/vnd.github.v3+json'
+        }
+    });
+    const dataClone = data.clone();
+    const repoInfo = await dataClone.json();
+    const fetchLanguages = await fetch(repoInfo.        languages_url, {
+        Accept: 'application/vnd.github.v3+json'
+    });
+    const languagesClone = fetchLanguages.clone();
+    const languagesInfo = await languagesClone.json();
+    const languages = [];
+    for (let language in languagesInfo) {
+        languages.push(language);
+    }
+    displayRepoInfo(repoInfo, languages);
+};
+
+const displayRepoInfo = function (repoInfo, languages) {
+    repoData.innerHTML = "";
+    const newDiv = document.createElement("div");
+    newDiv.innerHTML = 
+        '<h3>Name: ' + repoInfo.name + '</h3>' +
+            '<p>Description: ' + repoInfo.description + '</p>' +
+            '<p>Default Branch: ' + repoInfo.default_branch + '</p>' +
+            '<p>Languages: ' + languages.join(", ") + '</p>' +
+            '<a class="visit" href="' + repoInfo.html_url + '" target="_blank" rel="noreferrer noopener">View Repo on GitHub!</a>';
+    repoData.append(newDiv);
+    repoData.classList.remove("hide");
+    repos.classList.add("hide");
+};
 
 
 /* ---- EXPORT ONLY IF RUNNING TESTS ---- */
