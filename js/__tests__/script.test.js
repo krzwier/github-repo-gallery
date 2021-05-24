@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { domainToUnicode } = require('url');
 
 // must load document here, or else import below will fail
 const html = fs.readFileSync("./index.html");
@@ -209,10 +210,12 @@ describe('displayRepoList(repoData)', () => {
     });
 });
 
+
 describe('Clicking on a repo', () => {
 
-    it('displays repo info', () => {
-        const repoData = [
+    it('unhides repo data and hides repo list', async () => {
+        // arrange
+        const repoList = [
             {
                 "id": 369255294,
                 "name": "github-repo-gallery",
@@ -229,11 +232,19 @@ describe('Clicking on a repo', () => {
                 },
                 "default_branch": "master"
             }];
-        gallery.displayRepoList(repoData);
-        const repo = document.querySelector(".repo-list>li");
-        repo.click();
+        gallery.displayRepoList(repoList);
+        
+        // act
+        const repoTitle = document.querySelector(".repo-list>li>h3");
+        repoTitle.click();
 
-            // TEST INCOMPLETE: MUST WRITE EXPECT STATEMENT!
+        // assert after waiting for click event to propagate
+        setTimeout(() => {
+            const repoData = document.querySelector(".repo-data");
+            const repos = document.querySelector(".repos");
+            expect(repoData.classList).not.toContain("hide");
+            expect(repos.classList).toContain("hide");
+        }, 1000);           
 
     });
 

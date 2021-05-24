@@ -83,7 +83,7 @@ const fetchRepoInfo = async function (repoName) {
     });
     const dataClone = data.clone();
     const repoInfo = await dataClone.json();
-    const fetchLanguages = await fetch(repoInfo.        languages_url, {
+    const fetchLanguages = await fetch(repoInfo.languages_url, {
         Accept: 'application/vnd.github.v3+json'
     });
     const languagesClone = fetchLanguages.clone();
