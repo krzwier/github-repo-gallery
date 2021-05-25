@@ -145,7 +145,13 @@ const fetchRepoInfo = async function (repoName) {
         languages.push(language.node.name);
     }
     const picUrl = data.data.repository.openGraphImageUrl;
-    const readme = "";
+
+    const fetchReadme = await fetch('https://api.github.com/repos/' + username + '/' + repoName + '/contents/README.md', {
+        headers: {
+            Accept: 'application/vnd.github.VERSION.html'
+        }
+    });
+    readme = await fetchReadme.text();
     displayRepoInfo(readme, languages, picUrl);
     return { readme, languages, picUrl };
 };
