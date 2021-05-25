@@ -102,7 +102,7 @@ repoList.addEventListener("click", async function (e) {
 })
 
 const fetchRepoInfo = async function (repoName) {
-    const picRes = await fetch('https://api.github.com/graphql', {
+    const res = await fetch('https://api.github.com/graphql', {
         method: 'POST',
         headers: {
             'Accept': 'application/JSON',
@@ -112,44 +112,51 @@ const fetchRepoInfo = async function (repoName) {
         body: JSON.stringify({
             'query': 'query { ' +
                 'repository(owner: "' + username + '", name: "' + repoName + '") { ' +
-                    'openGraphImageUrl' +
-              '} }'
+                    'object(expression: "HEAD:") {' +
+                        '... on Tree {' +
+                            'entries {' +
+                                'name,' +
+                                'object {' +
+                                    '... on Blob {' +
+                                        'text' +
+                                    '}' +
+                                '}' +
+                            '}' +
+                        '}' +
+                    '}' +
+                    'openGraphImageUrl,' +
+                    'languages(first: 10) {' +
+                        'edges {' +
+                            'node {' +
+                                'name' +
+                            '}' +
+                        '}' +
+                    '}' +
+                '}' +
+
+            '}'
         })
     });
-    const picResClone = picRes.clone();
-    const pic = await picResClone.json();
-    const picUrl = pic.data.repository.openGraphImageUrl;
-    const data = await fetch('https://api.github.com/repos/' + username + '/' + repoName, {
-        headers: {
-            Accept: 'application/vnd.github.v3+json'
-        }
-    });
-    const dataClone = data.clone();
-    const repoInfo = await dataClone.json();
-    const fetchLanguages = await fetch(repoInfo.languages_url, {
-        Accept: 'application/vnd.github.v3+json'
-    });
-    const languagesClone = fetchLanguages.clone();
-    const languagesInfo = await languagesClone.json();
+    const resClone = res.clone();
+    const data = await resClone.json();
+    const languagesInfo = data.data.repository.languages.edges;
     const languages = [];
-    for (let language in languagesInfo) {
-        languages.push(language);
+    for (let language of languagesInfo) {
+        languages.push(language.node.name);
     }
-    displayRepoInfo(repoInfo, languages, picUrl);
-    return { repoInfo, languages, picUrl };
+    const picUrl = data.data.repository.openGraphImageUrl;
+    const readme = "";
+    displayRepoInfo(readme, languages, picUrl);
+    return { readme, languages, picUrl };
 };
 
-const displayRepoInfo = function (repoInfo, languages, picUrl) {
+const displayRepoInfo = function (readme, languages, picUrl) {
     repoData.innerHTML = "";
     const newDiv = document.createElement("div");
     newDiv.innerHTML = 
         '<div><img src="' + picUrl + '" alt="preview image"></div>' +
-        '<div class="info">' +
-            '<h3>Name: ' + repoInfo.name + '</h3>' +
-            '<p>Description: ' + repoInfo.description + '</p>' +
-            '<p>Default Branch: ' + repoInfo.default_branch + '</p>' +
-            '<p>Languages: ' + languages.join(", ") + '</p>' +
-            '<a class="visit" href="' + repoInfo.html_url + '" target="_blank" rel="noreferrer noopener">View Repo on GitHub!</a>' +
+        '<div class="readme">' +
+            readme +
         '</div>';
     repoData.append(newDiv);
     repoData.classList.remove("hide");

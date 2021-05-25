@@ -205,7 +205,7 @@ section.repo-data {
     width: 100%;
 }
 
-.repo-data .info {
+.repo-data .readme {
     display: block;
     padding-left: 2em;
 }
