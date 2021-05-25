@@ -333,3 +333,20 @@ describe('Clicking on area in repo-list but outside repo', () => {
 
 });
 
+describe('clicking "Back to Repo Gallery" button', () => {
+
+    it('hides repo info, unhides repo list, and hides itself', () => {
+        const repos = document.querySelector('.repos');
+        const repoData = document.querySelector('.repo-data');
+        const backToGallery = document.querySelector('.view-repos');
+
+        backToGallery.click();
+
+        expect(repos.classList).not.toContain("hide");
+        expect(repoData.classList).toContain("hide");
+        expect(backToGallery.classList).toContain("hide");
+
+    });
+
+});
+

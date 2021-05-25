@@ -6,6 +6,10 @@ const repos = document.querySelector('.repos');
 
 const repoData = document.querySelector('.repo-data');
 
+const backToGallery = document.querySelector('.view-repos');
+
+const filterInput = document.querySelector('.filter-repos');
+
 const username = "krzwier";
 
 const fetchProfile = async function (username) {
@@ -107,7 +111,15 @@ const displayRepoInfo = function (repoInfo, languages) {
     repoData.append(newDiv);
     repoData.classList.remove("hide");
     repos.classList.add("hide");
+    backToGallery.classList.remove("hide");
 };
+
+backToGallery.addEventListener("click", function () {
+    repos.classList.remove("hide");
+    repoData.classList.add("hide");
+    backToGallery.classList.add("hide");
+
+});
 
 
 /* ---- EXPORT ONLY IF RUNNING TESTS ---- */
