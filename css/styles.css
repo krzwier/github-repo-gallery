@@ -197,6 +197,19 @@ section.repo-data {
     width: 100%;
 }
 
+.repo-data div {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: start;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.repo-data .info {
+    display: block;
+    padding-left: 2em;
+}
+
 .repo-data h3 {
     text-align: left;
 }
