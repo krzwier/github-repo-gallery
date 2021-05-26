@@ -4,6 +4,7 @@
 
 body {
     display: flex;
+    width: 100vw;
     align-items: center;
     justify-content: center;
     margin: 0;
@@ -98,8 +99,7 @@ ul {
     max-width: 1200px;
 }
 
-.intro,
-.repos {
+.intro, .repos {
     width: 100%;
 }
 
@@ -128,7 +128,7 @@ ul {
     flex-wrap: wrap;
     align-items: center;
     width: 100%;
-    padding-left: 5%;
+    /* padding-left: 5%; */
 }
 
 .user-info div p {
@@ -140,7 +140,8 @@ ul {
 }
 
 .filter-repos {
-    width: 300px;
+    max-width: 300px;
+    width: 100%;
     margin-top: 1em;
     padding: 1em;
     margin-bottom: 1em;
@@ -163,18 +164,19 @@ section.repo-data {
 }
 
 .repo-list {
+    display: block;
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
+    padding: 0;
+    column-count: 1;
 }
 
 .repo-list li {
-    width: 90%;
-    margin: 1em 0;
+    width: 100%;
+    display: list-item;
+    margin: 0 0 1em 0;
     border: 1px solid #f86d58;
     padding: 0.5em;
+    break-inside: avoid;
 }
 
 .repo-list h3 {
@@ -193,13 +195,31 @@ section.repo-data {
     margin: 0.5em 0;
 }
 
+.repo-list li ul {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: start;
+    align-items: flex-start;
+}
+
+.repo-list li ul li {
+    width: auto;
+    font-size: .75em;
+    color: white;
+    border: none;
+    border-radius: 500px;
+    margin: 0 5px 8px 5px;
+    padding: 7px 12px;
+    background-color: #483978;
+}
+
 .repo-data {
     width: 100%;
 }
 
 .repo-data div {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: column nowrap;
     justify-content: start;
     align-items: flex-start;
     width: 100%;
@@ -207,7 +227,20 @@ section.repo-data {
 
 .repo-data .readme {
     display: block;
-    padding-left: 2em;
+    padding: 2em 0 0 0;
+}
+
+.repo-data h1 {
+    padding: 0;
+    margin: 0;
+    font-size: 1.5em;
+    font-family: 'Roboto Mono', monospace;
+    background: none;
+    color: #f86d58;
+    text-transform: none;
+    border: none;
+    width: 100%;
+    text-align: left;
 }
 
 .repo-data h3 {
@@ -248,13 +281,14 @@ section.repo-data {
         width: 45%;
         text-align: left;
     }
-
     .repo-list {
-        justify-content: space-between;
+        column-count: 2;
     }
-
-    .repo-list li {
-        width: 48%;
+    .repo-data div {
+        flex-flow: row nowrap;
+    }
+    .repo-data .readme {
+        padding: 0 0 0 2em;
     }
 }
 
@@ -265,7 +299,11 @@ section.repo-data {
 }
 
 @media (min-width: 1200px) {
-    .repo-list li {
-        width: 30%;
+    .repo-list {
+        column-count: 3;
     }
+    /* .repo-list li {
+        width: 29.8%;
+    } */
+    
 }
