@@ -1,14 +1,14 @@
 {
     "name": "github-repo-gallery",
     "description": "",
-    "main": "js/main/script.js",
+    "main": "js/bundle.js",
     "keywords": [],
     "author": "krzwier",
     "license": "ISC",
     "scripts": {
         "test": "jest --verbose --coverage",
         "debug": "node --debug-brk --inspect node_modules/.bin/jest",
-        "build": "browserify js/main/script.js -o js/bundle.js"
+        "rebuild": "browserify js/main/script.js -o js/bundle.js"
     },
     "jest": {
         "automock": false,
