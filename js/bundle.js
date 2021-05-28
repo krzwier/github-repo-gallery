@@ -27,7 +27,7 @@ const filterInput = document.querySelector('.filter-repos');
 
 const username = "krzwier";
 
-let repoList = {};
+let repoList = [];
 
 const fetchProfile = async function (username) {
     try {
@@ -79,12 +79,16 @@ const fetchRepoList = async function (username) {
                 'name,' +
                 'description,' +
                 'languages(first: 10) {' +
-                'edges {' +
-                'node {' +
-                'name' +
-                '}' +
-                '}' +
-                '}' +
+                    'edges {' +
+                        'node {' +
+                            'name' +
+                        '}' +
+                    '}' +
+                '},' +
+                'deployments {' +
+                    'totalCount' +
+                '},' +
+                'url' +
                 '}' +
                 '}' +
                 '}' +
@@ -136,13 +140,15 @@ repoListDiv.addEventListener("click", async function (e) {
     const header = element.querySelector("h3");
     const repoName = header.textContent;
     const repoInfo = await getRepoInfo(repoName);
-    await displayRepoInfo(repoInfo.readme, repoInfo.languages, repoInfo.picUrl);
+    await displayRepoInfo(repoInfo.repoName, repoInfo.readme, repoInfo.languages, repoInfo.picUrl, repoInfo.url, repoInfo.numDeployments);
 
 })
 
 
 const getRepoInfo = async function (repoName) {
     let picUrl = "";
+    let url = "";
+    let numDeployments = 0;
     const languages = [];
     for (let repo of repoList) {
         if (repo.name === repoName) {
@@ -150,9 +156,12 @@ const getRepoInfo = async function (repoName) {
                 languages.push(language.node.name);
             }
             picUrl = repo.openGraphImageUrl;
+            url = repo.url;
+            numDeployments = repo.deployments.totalCount;
             break;
         }
     }
+    // fetch readme file
     const res = await fetch('https://api.github.com/graphql', {
         method: 'POST',
         headers: {
@@ -192,7 +201,8 @@ const getRepoInfo = async function (repoName) {
         }
     }
     console.log(`Readme content: ${readme}`);
-    return { readme, languages, picUrl };
+
+    return { repoName, readme, languages, picUrl, url, numDeployments};
 
 };
 
@@ -250,7 +260,7 @@ const getRepoInfo = async function (repoName) {
 //     return { readme, languages, picUrl };
 // };
 
-const displayRepoInfo = async function (rawReadme, languages, picUrl) {
+const displayRepoInfo = async function (repoName, rawReadme, languages, picUrl, url, numDeployments) {
 
     const res = await fetch ("https://api.github.com/markdown", {
         method: "POST",
@@ -258,7 +268,7 @@ const displayRepoInfo = async function (rawReadme, languages, picUrl) {
             'Accept': 'application/vnd.github.v3+json'
         },
         body: JSON.stringify({
-            text: rawReadme
+            'text': rawReadme
         })
     })
     const resClone = res.clone();
@@ -266,11 +276,21 @@ const displayRepoInfo = async function (rawReadme, languages, picUrl) {
 
     repoData.innerHTML = "";
     const newDiv = document.createElement("div");
-    newDiv.innerHTML =
-        '<div><img src="' + picUrl + '" alt="preview image"></div>' +
+    console.log(readme);
+    let htmlString = 
+    '<div><img src="' + picUrl + '" alt="preview image"></div>' +
         '<div class="readme">' +
-        readme +
-        '</div>';
+            readme +
+        '<div class="buttons"><a class="visit" href="' + url + '" target="_blank" rel="noreferrer noopener">View Repo on GitHub</a>';
+    if (numDeployments >= 1) {
+        htmlString = htmlString +
+            '<a class="visit" href="https://' + username + '.github.io/' + repoName + '/" target="_blank" rel="noreferrer noopener">Live Version</a></div>';
+    } else {
+        htmlString = htmlString + '</div>';
+    }
+    htmlString = htmlString + '</div>';
+    newDiv.innerHTML = htmlString;
+    console.log(newDiv.innerHTML);
     repoData.append(newDiv);
     repoData.classList.remove("hide");
     repos.classList.add("hide");

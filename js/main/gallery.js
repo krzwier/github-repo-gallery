@@ -14,7 +14,7 @@ const filterInput = document.querySelector('.filter-repos');
 
 const username = "krzwier";
 
-let repoList = {};
+let repoList = [];
 
 const fetchProfile = async function (username) {
     try {
@@ -71,7 +71,11 @@ const fetchRepoList = async function (username) {
                 'name' +
                 '}' +
                 '}' +
-                '}' +
+                '},' +
+                'deployments {' +
+                'totalCount' +
+                '},' +
+                'url' +
                 '}' +
                 '}' +
                 '}' +
@@ -79,15 +83,17 @@ const fetchRepoList = async function (username) {
         })
     });
     const resClone = res.clone();
-    repoListObject = await resClone.json();
+    const repoListObject = await resClone.json();
     repoList = repoListObject.data.repositoryOwner.repositories.nodes;
     displayRepoList(repoList);
+    return repoList;
 }
 
-const displayRepoList = async function (repoList) {
+const displayRepoList = function (repoList) {
     filterInput.classList.remove("hide");
     console.log(repoList);
     for (let repo of repoList) {
+        // if (repo.na)
         const languages = document.createElement("ul");
         languages.classList.add("languages");
         for (let language of repo.languages.edges) {
@@ -123,13 +129,15 @@ repoListDiv.addEventListener("click", async function (e) {
     const header = element.querySelector("h3");
     const repoName = header.textContent;
     const repoInfo = await getRepoInfo(repoName);
-    await displayRepoInfo(repoInfo.readme, repoInfo.languages, repoInfo.picUrl);
+    await displayRepoInfo(repoInfo.repoName, repoInfo.readme, repoInfo.languages, repoInfo.picUrl, repoInfo.url, repoInfo.numDeployments);
 
 })
 
 
 const getRepoInfo = async function (repoName) {
     let picUrl = "";
+    let url = "";
+    let numDeployments = 0;
     const languages = [];
     for (let repo of repoList) {
         if (repo.name === repoName) {
@@ -137,9 +145,12 @@ const getRepoInfo = async function (repoName) {
                 languages.push(language.node.name);
             }
             picUrl = repo.openGraphImageUrl;
+            url = repo.url;
+            numDeployments = repo.deployments.totalCount;
             break;
         }
     }
+    // fetch readme file
     const res = await fetch('https://api.github.com/graphql', {
         method: 'POST',
         headers: {
@@ -168,8 +179,6 @@ const getRepoInfo = async function (repoName) {
     });
     const resClone = res.clone();
     const files = await resClone.json();
-    console.log(files);
-    console.log(files.data.repository.object.entries);
     let readme = "";
     for (let file of files.data.repository.object.entries) {
         console.log(file.name.toUpperCase());
@@ -178,74 +187,19 @@ const getRepoInfo = async function (repoName) {
             break;
         }
     }
-    console.log(`Readme content: ${readme}`);
-    return { readme, languages, picUrl };
+    return { repoName, readme, languages, picUrl, url, numDeployments };
 
 };
 
-// const fetchRepoInfo = async function (repoName) {
-//     const res = await fetch('https://api.github.com/graphql', {
-//         method: 'POST',
-//         headers: {
-//             'Accept': 'application/JSON',
-//             'Content-Type': 'application.JSON',
-//             'Authorization': 'token ' + funkyTown(mess(), str())
-//         },
-//         body: JSON.stringify({
-//             'query': 'query { ' +
-//                 'repository(owner: "' + username + '", name: "' + repoName + '") { ' +
-//                 'object(expression: "HEAD:") {' +
-//                 '... on Tree {' +
-//                 'entries {' +
-//                 'name,' +
-//                 'object {' +
-//                 '... on Blob {' +
-//                 'text' +
-//                 '}' +
-//                 '}' +
-//                 '}' +
-//                 '}' +
-//                 '}' +
-//                 'openGraphImageUrl,' +
-//                 'languages(first: 10) {' +
-//                 'edges {' +
-//                 'node {' +
-//                 'name' +
-//                 '}' +
-//                 '}' +
-//                 '}' +
-//                 '}' +
+const displayRepoInfo = async function (repoName, rawReadme, languages, picUrl, url, numDeployments) {
 
-//                 '}'
-//         })
-//     });
-//     const resClone = res.clone();
-//     const data = await resClone.json();
-//     const languagesInfo = data.data.repository.languages.edges;
-//     const languages = [];
-//     for (let language of languagesInfo) {
-//         languages.push(language.node.name);
-//     }
-//     const picUrl = data.data.repository.openGraphImageUrl;
-
-//     const fetchReadme = await fetch('https://api.github.com/repos/' + username + '/' + repoName + '/contents/README.md', {
-//         headers: {
-//             Accept: 'application/vnd.github.VERSION.html'
-//         }
-//     });
-//     readme = await fetchReadme.text();
-//     return { readme, languages, picUrl };
-// };
-
-const displayRepoInfo = async function (rawReadme, languages, picUrl) {
-
-    const res = await fetch ("https://api.github.com/markdown", {
+    const res = await fetch("https://api.github.com/markdown", {
         method: "POST",
         headers: {
             'Accept': 'application/vnd.github.v3+json'
         },
         body: JSON.stringify({
-            text: rawReadme
+            'text': rawReadme
         })
     })
     const resClone = res.clone();
@@ -253,11 +207,21 @@ const displayRepoInfo = async function (rawReadme, languages, picUrl) {
 
     repoData.innerHTML = "";
     const newDiv = document.createElement("div");
-    newDiv.innerHTML =
+    console.log(readme);
+    let htmlString =
         '<div><img src="' + picUrl + '" alt="preview image"></div>' +
         '<div class="readme">' +
         readme +
-        '</div>';
+        '<div class="buttons"><a class="visit" href="' + url + '" target="_blank" rel="noreferrer noopener">View Repo on GitHub</a>';
+    if (numDeployments >= 1) {
+        htmlString = htmlString +
+            '<a class="visit" href="https://' + username + '.github.io/' + repoName + '/" target="_blank" rel="noreferrer noopener">Live Version</a></div>';
+    } else {
+        htmlString = htmlString + '</div>';
+    }
+    htmlString = htmlString + '</div>';
+    newDiv.innerHTML = htmlString;
+    console.log(newDiv.innerHTML);
     repoData.append(newDiv);
     repoData.classList.remove("hide");
     repos.classList.add("hide");
