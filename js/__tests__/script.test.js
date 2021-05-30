@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { domainToUnicode } = require('url');
 const mockConsole = require('jest-mock-console');
+const {default: userEvent} = require('@testing-library/user-event');
 
 // must load document here, or else import below will fail
 const html = fs.readFileSync("./index.html");
@@ -528,4 +529,16 @@ describe('clicking "Back to Repo Gallery" button', () => {
     });
 
 });
+
+describe('typing in the search box', () => {
+
+    it('shows only repos with search text', () => {
+        gallery.displayRepoList(repoListArray);
+        const filterInput = document.querySelector('.filter-repos');
+        userEvent.type(filterInput, "z");
+        const repoTitles = window.document.querySelectorAll(".repo-list>li>h3");
+        expect(repoTitles.length).toEqual(0);
+    });
+
+})
 
