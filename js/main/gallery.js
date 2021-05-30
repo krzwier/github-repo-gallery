@@ -1,3 +1,4 @@
+const { HmacSHA3 } = require("crypto-js");
 const funkyTown = require("./funkyTown");
 
 const overview = document.querySelector('.overview');
@@ -106,7 +107,7 @@ const displayRepoList = function (repoList) {
     filterInput.classList.remove("hide");
     for (let repo of repoList) {
         const languages = document.createElement("ul");
-        languages.classList.add("languages");
+        languages.classList.add("language-list");
         for (let language of repo.languages.edges) {
             const item = document.createElement("li");
             item.textContent = language.node.name;
@@ -235,12 +236,20 @@ const displayRepoInfo = async function (repoName, rawReadme, languages, picUrl, 
     } catch (e) {
         console.error(`Failed conversion to text in displayRepoInfo("${repoName}", "${rawReadme}", ${languages}, "${picUrl}", "${url}", ${numDeployments}) function: ${e.message}`);
     };
+    const languagesUL = document.createElement("ul");
+        languagesUL.classList.add("language-list");
+        for (let language of languages) {
+            const item = document.createElement("li");
+            item.textContent = language;
+            languagesUL.append(item);
+        }
     repoData.innerHTML = "";
     const newDiv = document.createElement("div");
     let htmlString =
         '<div><img src="' + picUrl + '" alt="preview image"></div>' +
         '<div class="readme">' +
-        readme +
+        readme + 
+        "<div>" + languagesUL.outerHTML + "</div>" +
         '<div class="buttons"><a class="visit" href="' + url + '" target="_blank" rel="noreferrer noopener">View Repo on GitHub</a>';
     if (numDeployments >= 1) {
         htmlString = htmlString +
@@ -251,6 +260,8 @@ const displayRepoInfo = async function (repoName, rawReadme, languages, picUrl, 
     htmlString = htmlString + '</div>';
     newDiv.innerHTML = htmlString;
     repoData.append(newDiv);
+    
+    
     repoData.classList.remove("hide");
     repos.classList.add("hide");
     backToGallery.classList.remove("hide");
@@ -261,6 +272,20 @@ backToGallery.addEventListener("click", function () {
     repoData.classList.add("hide");
     backToGallery.classList.add("hide");
 
+});
+
+filterInput.addEventListener("input", function (e) {
+    const searchText = filterInput.value.toLowerCase();
+    const repos = document.querySelectorAll(".repo");
+    for (let repo of repos) {
+        const repoHeader = repo.querySelector("h3");
+        const repoTitle = repoHeader.textContent.toLowerCase();
+        if (repoTitle.includes(searchText)) {
+            repo.classList.remove("hide");
+        } else {
+            repo.classList.add("hide");
+        }
+    }
 });
 
 const str = function () {

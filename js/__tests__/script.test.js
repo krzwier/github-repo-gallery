@@ -532,12 +532,29 @@ describe('clicking "Back to Repo Gallery" button', () => {
 
 describe('typing in the search box', () => {
 
-    it('shows only repos with search text', () => {
+    it('"z" hides all repos', () => {
         gallery.displayRepoList(repoListArray);
         const filterInput = document.querySelector('.filter-repos');
         userEvent.type(filterInput, "z");
-        const repoTitles = window.document.querySelectorAll(".repo-list>li>h3");
-        expect(repoTitles.length).toEqual(0);
+        const hiddenRepos = window.document.querySelectorAll(".repo.hide");
+        expect(hiddenRepos.length).toEqual(2);
+    });
+
+    it('"g" hides no repos', () => {
+        gallery.displayRepoList(repoListArray);
+        const filterInput = document.querySelector('.filter-repos');
+        userEvent.type(filterInput, "g");
+        const hiddenRepos = window.document.querySelectorAll(".repo.hide");
+        expect(hiddenRepos.length).toEqual(0);
+    });
+
+
+    it('"gu" hides 1 repo', () => {
+        gallery.displayRepoList(repoListArray);
+        const filterInput = document.querySelector('.filter-repos');
+        userEvent.type(filterInput, "gu");
+        const hiddenRepos = window.document.querySelectorAll(".repo.hide");
+        expect(hiddenRepos.length).toEqual(1);
     });
 
 })

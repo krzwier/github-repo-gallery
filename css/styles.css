@@ -195,7 +195,7 @@ section.repo-data {
     margin: 0.5em 0;
 }
 
-.repo-list li ul {
+/* .repo-list li ul {
     display: flex;
     flex-flow: row wrap;
     justify-content: start;
@@ -211,7 +211,7 @@ section.repo-data {
     margin: 8px 5px;
     padding: 7px 12px;
     background-color: #483978;
-}
+} */
 
 .repo-data {
     width: 100%;
@@ -230,7 +230,29 @@ section.repo-data {
     padding: 2em 0 0 0;
 }
 
-.readme ul {
+.language-list {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: start;
+    align-items: flex-start;
+}
+
+.language-list li {
+    width: auto;
+    font-size: .75em;
+    color: white;
+    border: none;
+    border-radius: 500px;
+    margin: 8px 5px;
+    padding: 7px 12px;
+    background-color: #483978;
+}
+
+.repo-data .language-list li {
+    background-color:#f86d58;
+}
+
+.readme>ul {
     list-style: disc outside none;
     padding-left: 20px;
 }
