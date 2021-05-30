@@ -6,4 +6,4 @@ Tests are written using Jest. Test coverage is 97%. The last few uncovered lines
 
 Scripts are bundled for the browser using Browserify. 
 
-The gallery is based on a project from [Skillcrush](https://skillcrush.com/)'s Javascript course, but I prettied it up and expanded it quite a bit.  The GitHub GraphQL API was crucial because it allowed me to showcase images, languages, and pull the readme text.  Manipulating the accessible data to get it into my desired form proved to be quite a challenge.  This project also gave me a much better understanding of async functions, promises, and rejection handling.
+The gallery is based on a project from [Skillcrush](https://skillcrush.com/)'s Javascript course, but I prettied it up and expanded it quite a bit.  The GitHub GraphQL API was crucial because it allowed me to showcase images, list languages, and pull the readme text.  Manipulating the accessible data to get it into my desired form proved to be quite a challenge.  This project also gave me a much better understanding of async functions, promises, and rejection handling.
