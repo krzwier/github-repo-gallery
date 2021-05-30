@@ -16,20 +16,49 @@ const username = "krzwier";
 
 let repoList = [];
 
+const repoListQuery = {
+    'query': 'query { ' +
+        'repositoryOwner(login: "' + username + '") { ' +
+        'repositories(orderBy: {field: CREATED_AT, direction: DESC}, first: 100, privacy: PUBLIC) {' +
+        'nodes {' +
+        'openGraphImageUrl,' +
+        'name,' +
+        'description,' +
+        'languages(first: 10) {' +
+        'edges {' +
+        'node {' +
+        'name' +
+        '}' +
+        '}' +
+        '},' +
+        'deployments {' +
+        'totalCount' +
+        '},' +
+        'url' +
+        '}' +
+        '}' +
+        '}' +
+        '}'
+};
+
+
 const fetchProfile = async function (username) {
+
+    const data = await fetch('https://api.github.com/users/' + username, {
+        headers: {
+            Accept: 'application/vnd.github.v3+json'
+        }
+    }).catch((e) => {
+        console.error(`API call to https://api.github.com/users/ rejected in fetchProfile("${username}") function: ${e.message}`);
+    });
     try {
-        const data = await fetch('https://api.github.com/users/' + username, {
-            headers: {
-                Accept: 'application/vnd.github.v3+json'
-            }
-        });
-        const dataClone = data.clone();
-        const userData = await dataClone.json();
+        const userData = await data.json()
         displayProfile(userData);
         return userData;
     } catch (e) {
-        console.log(`Fetch failed in fetchProfile() method: ${e.message}`);
-    }
+        console.error(`Failed conversion to JSON in fetchProfile("${username}" function: ${e.message}`);
+    };
+
 }
 
 const displayProfile = function (userData) {
@@ -50,6 +79,7 @@ const displayProfile = function (userData) {
 }
 
 const fetchRepoList = async function (username) {
+
     const res = await fetch('https://api.github.com/graphql', {
         method: 'POST',
         headers: {
@@ -57,43 +87,24 @@ const fetchRepoList = async function (username) {
             'Content-Type': 'application.JSON',
             'Authorization': 'token ' + funkyTown(mess(), str())
         },
-        body: JSON.stringify({
-            'query': 'query { ' +
-                'repositoryOwner(login: "' + username + '") { ' +
-                'repositories(orderBy: {field: CREATED_AT, direction: DESC}, first: 100, privacy: PUBLIC) {' +
-                'nodes {' +
-                'openGraphImageUrl,' +
-                'name,' +
-                'description,' +
-                'languages(first: 10) {' +
-                'edges {' +
-                'node {' +
-                'name' +
-                '}' +
-                '}' +
-                '},' +
-                'deployments {' +
-                'totalCount' +
-                '},' +
-                'url' +
-                '}' +
-                '}' +
-                '}' +
-                '}'
-        })
+        body: JSON.stringify(repoListQuery)
+    }).catch((e) => {
+        console.error(`API call to https://api.github.com/graphql rejected in fetchRepoList("${username}") function: ${e.message}`);
     });
-    const resClone = res.clone();
-    const repoListObject = await resClone.json();
-    repoList = repoListObject.data.repositoryOwner.repositories.nodes;
-    displayRepoList(repoList);
-    return repoList;
+    try {
+        const repoListObject = await res.json();
+        repoList = repoListObject.data.repositoryOwner.repositories.nodes;
+        displayRepoList(repoList);
+        return repoList;
+    } catch (e) {
+        console.error(`Failed conversion to JSON in fetchRepoList("${username}" function: ${e.message}`);
+    };
+
 }
 
 const displayRepoList = function (repoList) {
     filterInput.classList.remove("hide");
-    console.log(repoList);
     for (let repo of repoList) {
-        // if (repo.na)
         const languages = document.createElement("ul");
         languages.classList.add("languages");
         for (let language of repo.languages.edges) {
@@ -121,17 +132,27 @@ const mess = function () {
 }
 
 repoListDiv.addEventListener("click", async function (e) {
-    element = e.target;
-    while (!element.classList.contains("repo")) {
-        console.log(element);
-        element = element.parentElement;
+    let element = e.target;
+    // let element = e.target;
+    if (e.target.classList.contains("repo-list")) {
+        return;
+    } else {
+        while (!element.classList.contains("repo")) {
+            element = element.parentElement;
+        }
     }
     const header = element.querySelector("h3");
     const repoName = header.textContent;
-    const repoInfo = await getRepoInfo(repoName);
-    await displayRepoInfo(repoInfo.repoName, repoInfo.readme, repoInfo.languages, repoInfo.picUrl, repoInfo.url, repoInfo.numDeployments);
-
-})
+    let repoInfo = {};
+    repoInfo = await getRepoInfo(repoName).catch((e) => {
+        console.error(`getRepoInfo("${repoName}") function rejected promise when called by repo-list click event handler: ${e.message}`);
+    });
+    try {
+        await displayRepoInfo(repoName, repoInfo.readme, repoInfo.languages, repoInfo.picUrl, repoInfo.url, repoInfo.numDeployments);
+    } catch (e) {
+        console.error(`displayRepoInfo("${repoName}", "${repoInfo.readme}", ${repoInfo.languages}, "${repoInfo.picUrl}", "${repoInfo.url}", ${repoInfo.numDeployments}) function failed when called by repo-list click event handler: ${e.message}`);
+    };
+});
 
 
 const getRepoInfo = async function (repoName) {
@@ -176,17 +197,21 @@ const getRepoInfo = async function (repoName) {
                 '}' +
                 '}'
         })
+    }).catch((e) => {
+        console.error(`API call to https://api.github.com/graphql rejected in getRepoInfo("${repoName}") function: ${e.message}`);
     });
-    const resClone = res.clone();
-    const files = await resClone.json();
     let readme = "";
-    for (let file of files.data.repository.object.entries) {
-        console.log(file.name.toUpperCase());
-        if (file.name.toUpperCase() === "README.MD") {
-            readme = file.object.text;
-            break;
+    try {
+        const files = await res.json();
+        for (let file of files.data.repository.object.entries) {
+            if (file.name.toUpperCase() === "README.MD") {
+                readme = file.object.text;
+                break;
+            }
         }
-    }
+    } catch (e) {
+        console.error(`Failed conversion to JSON in getRepoInfo("${repoName}" function: ${e.message}`);
+    };
     return { repoName, readme, languages, picUrl, url, numDeployments };
 
 };
@@ -201,13 +226,17 @@ const displayRepoInfo = async function (repoName, rawReadme, languages, picUrl, 
         body: JSON.stringify({
             'text': rawReadme
         })
-    })
-    const resClone = res.clone();
-    const readme = await resClone.text();
-
+    }).catch((e) => {
+        console.error(`API call to https://api.github.com/markdown rejected in displayRepoInfo("${repoName}", "${rawReadme}", ${languages}, "${picUrl}", "${url}", ${numDeployments}) function: ${e.message}`);
+    });
+    let readme = "";
+    try {
+        readme = await res.text();
+    } catch (e) {
+        console.error(`Failed conversion to text in displayRepoInfo("${repoName}", "${rawReadme}", ${languages}, "${picUrl}", "${url}", ${numDeployments}) function: ${e.message}`);
+    };
     repoData.innerHTML = "";
     const newDiv = document.createElement("div");
-    console.log(readme);
     let htmlString =
         '<div><img src="' + picUrl + '" alt="preview image"></div>' +
         '<div class="readme">' +
@@ -221,7 +250,6 @@ const displayRepoInfo = async function (repoName, rawReadme, languages, picUrl, 
     }
     htmlString = htmlString + '</div>';
     newDiv.innerHTML = htmlString;
-    console.log(newDiv.innerHTML);
     repoData.append(newDiv);
     repoData.classList.remove("hide");
     repos.classList.add("hide");
