@@ -197,6 +197,110 @@ const fileListResponse = {
     }
 };
 
+const repoListResponseWithDeployments = {
+    "data": {
+        "repositoryOwner": {
+            "repositories": {
+                "nodes": [
+                    {
+                        "openGraphImageUrl": "https://repository-images.githubusercontent.com/360380005/67d05f80-b955-11eb-8bd7-68b595b345d1",
+                        "name": "spelling-tutor",
+                        "description": "Web app I created to help my kids study their spelling lists.",
+                        "languages": {
+                          "edges": [
+                            {
+                              "node": {
+                                "name": "HTML"
+                              }
+                            },
+                            {
+                              "node": {
+                                "name": "CSS"
+                              }
+                            },
+                            {
+                              "node": {
+                                "name": "JavaScript"
+                              }
+                            }
+                          ]
+                        },
+                        "deployments": {
+                          "totalCount": 13
+                        },
+                        "url": "https://github.com/krzwier/spelling-tutor"
+                      }
+                ]
+            }
+        }
+    }
+};
+
+const fileListWithDeployments = {
+    "data": {
+      "repository": {
+        "object": {
+          "entries": [
+            {
+              "name": ".DS_Store",
+              "object": {
+                "text": null
+              }
+            },
+            {
+              "name": ".gitignore",
+              "object": {
+                "text": ".DS_Store"
+              }
+            },
+            {
+              "name": ".vscode",
+              "object": {}
+            },
+            {
+              "name": "README.md",
+              "object": {
+                "text": "# spelling-tutor\n\nI have four school-age children, and studying spelling is not always a pleasant affair 😬. There is often frustration and sometimes even tears, and keeping all of the different spelling lists straight for each of them can be tricky.\n\nI happened to be learning Javascript in a [Skillcrush](https://skillcrush.com/) course, and it occurred to me that I could practice my new skills while creating a web app for my kids to study their spelling lists.\n\nThe app grew and I added various easter eggs along the way, including gifs that display in response to certain user interactions (I fetched from the GIPHY API).  When I added a menu so that my kids could pick the voice that the computer used to read their spelling lists, spelling time turned into giggle time.  Our school year is now almost finished, but this app has seen lots of use.  Accordingly, it has benefitted from a lot of UI testing 😆.  The best part is that my kids are so proud that their mom created it 🦸‍♀️!  They even enjoy watching (and sometimes helping) when I update the code each week with their new spelling lists. Who knows--maybe I'm raising a new generation of coders!\n\nLive version [here](https://krzwier.github.io/spelling-tutor/).\n"
+              }
+            },
+            {
+              "name": "css",
+              "object": {}
+            },
+            {
+              "name": "img",
+              "object": {}
+            },
+            {
+              "name": "index.html",
+              "object": {
+                "text": "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Spelling Tutor</title>\n    <link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap\" rel=\"stylesheet\" />\n    <link rel=\"stylesheet\" href=\"https://pro.fontawesome.com/releases/v5.10.0/css/all.css\" integrity=\"sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p\" crossorigin=\"anonymous\" />\n\n    <link rel=\"stylesheet\" href=\"css/styles.css\" />\n    <script src=\"js/script.js\" defer></script>\n</head>\n\n<body>\n    <!-- <div id=\"background\"></div> -->\n    <div class=\"landing modal\">\n        <div class=\"modal-container\">\n            <h1>Hello there!</h1>\n            <p>Who are you?</p>\n\n            <input id=\"name\" spellcheck=\"false\" placeholder=\"Type your name here\"></input>\n            <button id=\"submit-name\">Enter</button>\n            <button id=\"speech-settings\"><i class=\"fas fa-cog\"></i></button>\n        </div>\n    </div>\n\n    <div class=\"settings modal hide\">\n        <div class=\"modal-container\">\n            <button class=\"modal-x\"><i class=\"fas fa-times\"></i></button>\n            <h1>Speech Settings</h1>\n            <table>\n                <tr class=\"slider\">\n                    <td class=\"label\">Rate</td>\n                    <td class=\"middle\"><input class=\"range\" type=\"range\" min=\"0.5\" max=\"2\" value=\"1\" step=\"0.1\" id=\"rate\"></td>\n                    <td class=\"rate-value\">1</td>\n                </tr>\n                <tr class=\"slider\">\n                    <td class=\"label\">Pitch</td>\n                    <td class=\"middle\"><input class=\"range\" type=\"range\" min=\"0\" max=\"2\" value=\"1\" step=\"0.1\" id=\"pitch\"></td>\n                    <td class=\"pitch-value\">1</td>\n                </tr>\n            </table>\n            <select>\n            </select>\n        </div>\n        <div class=\"controls\">\n            <button id=\"play\" type=\"button\"><img src=\"img/voice-white.png\" alt=\"speak\"></button>\n            <button id=\"ok\" type=\"button\"><i class=\"fas fa-check\"></i></button>\n        </div>\n        </form>\n\n\n\n\n\n    </div>\n    </div>\n\n    <div class=\"entry modal hide\">\n        <div class=\"modal-container\">\n            <button class=\"modal-x\"><i class=\"fas fa-times\"></i></button>\n\n            <h1>Welcome, user!</h1>\n            <p>Are you ready to spell?</p>\n            <div class=\"two-wide\">\n                <button id=\"yes\">Yes</button>\n                <button id=\"no\">No</button>\n            </div>\n        </div>\n    </div>\n\n    <div class=\"sad modal hide\">\n        <div class=\"modal-container\">\n            <button class=\"modal-x\"><i class=\"fas fa-times\"></i></button>\n\n            <img class=\"animated-gif\" src=\"img/sad-face.gif\" alt=\"Sad\" />\n        </div>\n    </div>\n\n\n\n    <div class=\"tsk modal hide\">\n        <div class=\"modal-container\">\n            <button class=\"modal-x\"><i class=\"fas fa-times\"></i></button>\n\n            <img class=\"animated-gif\" src=\"img/shake-head.gif\" alt=\"disapproving\" />\n\n        </div>\n    </div>\n\n    <div class=\"quiz modal hide\">\n        <div class=\"modal-container\">\n            <button class=\"modal-x\"><i class=\"fas fa-times\"></i></button>\n\n            <h1>Spelling Quiz</h1>\n\n            <div class=\"show-letter\"></div>\n\n            <div class=\"two-wide\">\n                <input spellcheck=\"false\" id=\"guess\"></input>\n                <button id=\"submit-guess\"><i class=\"fas fa-arrow-right\"></i></button>\n            </div>\n\n            <div class=\"two-wide\">\n                <p>Repeat word:</p>\n                <button id=\"speak-button\"><img src=\"img/voice-white.png\" alt=\"head speaking\" /></button>\n            </div>\n\n            <div class=\"meter\">\n                <span style=\"width: 0\"></span>\n            </div>\n            <p id=\"num-words\">Word</p>\n\n            <div class=\"please modal hide box sb\">\n                <h1>Wait, really?</h1>\n                <div class=\"modal-container\">\n\n                    <img class=\"animated-gif\" src=\"img/please.gif\" alt=\"please don't leave me\" />\n                </div>\n                <div>\n                    <button id=\"yes-close\">Yes</button>\n                    <button id=\"no-close\">No</button>\n                </div>\n\n            </div>\n        </div>\n    </div>\n\n    <div class=\"congrats modal hide\">\n        <div class=\"modal-container\">\n            <button class=\"modal-x\"><i class=\"fas fa-times\"></i></button>\n\n\n            <img class=\"animated-gif\" src=\"img/celebrate.gif\" alt=\"celebrate\" />\n\n        </div>\n    </div>\n\n\n\n</body>\n\n</html>"
+              }
+            },
+            {
+              "name": "js",
+              "object": {}
+            },
+            {
+              "name": "package.json",
+              "object": {
+                "text": "{\n  \"name\": \"spelling-tutor\",\n  \"version\": \"1.0.0\",\n  \"description\": \"\",\n  \"main\": \"index.html\",\n  \"dependencies\": {},\n  \"keywords\": []\n}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  };
+
+const readmeHTMLWithDeployments = 
+    '<h1><a id="user-content-spelling-tutor" class="anchor" href="#spelling-tutor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>spelling-tutor</h1>' +
+    '<p>I have four school-age children, and studying spelling is not always a pleasant affair <g-emoji class="g-emoji" alias="grimacing" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f62c.png">😬</g-emoji>. There is often frustration and sometimes even tears, and keeping all of the different spelling lists straight for each of them can be tricky.</p>' +
+    '<p>I happened to be learning Javascript in a <a href="https://skillcrush.com/" rel="nofollow">Skillcrush</a> course, and it occurred to me that I could practice my new skills while creating a web app for my kids to study their spelling lists.</p>' +
+    '<p>The app grew and I added various easter eggs along the way, including gifs that display in response to certain user interactions (I fetched from the GIPHY API).  When I added a menu so that my kids could pick the voice that the computer used to read their spelling lists, spelling time turned into giggle time.  Our school year is now almost finished, but this app has seen lots of use.  Accordingly, it has benefitted from a lot of UI testing <g-emoji class="g-emoji" alias="laughing" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f606.png">😆</g-emoji>.  The best part is that my kids are so proud that their mom created it <g-emoji class="g-emoji" alias="superhero_woman" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9b8-2640.png">🦸‍♀️</g-emoji>!  They even enjoy watching (and sometimes helping) when I update the code each week with their new spelling lists. Who knows--maybe I\'m raising a new generation of coders!</p>' +
+    '<p>Live version <a href="https://krzwier.github.io/spelling-tutor/" rel="nofollow">here</a>.</p>';
+
+
 const readmeHTML =
     '<h1><a id="user-content-guess-the-word" class="anchor" href="#guess-the-word" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>guess-the-word</h1>' +
     '<p>Project created in Javascript course in the <a href="https://skillcrush.com/" rel="nofollow">Skillcrush</a> <a href="https://skillcrush.com/break-into-tech-blueprint" rel="nofollow">Break Into Tech</a> program.</p>' +
@@ -361,6 +465,28 @@ describe('Clicking on a repo', () => {
         expect(repos.classList).toContain("hide");
     });
     
+    it('shows "live version" button if repo has deployments', async () => {
+        fetch.mockResponses(
+            [
+                JSON.stringify(repoListResponseWithDeployments),
+                { status: 200 }
+            ],
+            [
+                JSON.stringify(fileListWithDeployments),
+                { status: 200 }
+            ],
+            [
+                readmeHTMLWithDeployments,
+                { status: 200 }
+            ]);
+        const result = await gallery.fetchRepoList("krzwier");
+        const repoTitle = document.querySelector(".repo-list>li>h3");
+        repoTitle.click();
+        // wait for click to propagate up parent elements and complete
+        await new Promise((r) => setTimeout(r, 1000));
+        const liveButton = document.querySelector(".live");
+        expect(liveButton).not.toBeNull();
+    });
 
 });
 

@@ -244,7 +244,7 @@ const displayRepoInfo = async function (repoName, rawReadme, languages, picUrl, 
         '<div class="buttons"><a class="visit" href="' + url + '" target="_blank" rel="noreferrer noopener">View Repo on GitHub</a>';
     if (numDeployments >= 1) {
         htmlString = htmlString +
-            '<a class="visit" href="https://' + username + '.github.io/' + repoName + '/" target="_blank" rel="noreferrer noopener">Live Version</a></div>';
+            '<a class="visit live" href="https://' + username + '.github.io/' + repoName + '/" target="_blank" rel="noreferrer noopener">Live Version</a></div>';
     } else {
         htmlString = htmlString + '</div>';
     }
