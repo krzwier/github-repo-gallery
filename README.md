@@ -2,7 +2,7 @@
 
 This project is a visual gallery of all of my public GitHub repos.  The app fetches from both the REST API and the GraphQL API.  Preview images for each repository come from its "social preview" image. When you click a repo from the main gallery, its readme text is displayed on its detail page, along with buttons that link to the repo on GitHub and the live version (if it exists).
 
-Tests are written using Jest. Test coverage is 97%. The last few uncovered lines are promise rejection handlers for internal async functions.  I provided test covered for promise rejection for all external fetch calls at least 😉.  
+Tests are written using Jest. Test coverage is 97%. The last few uncovered lines are promise rejection handlers for internal async functions.  I provided test coverage for promise rejection for all external fetch calls at least 😉.  
 
 Scripts are bundled for the browser using Browserify. 
 
