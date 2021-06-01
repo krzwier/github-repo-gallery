@@ -250,6 +250,7 @@ section.repo-data {
 
 .repo-data .language-list li {
     background-color:#f86d58;
+    margin: 8px 10px 8px 0;
 }
 
 .readme>ul {
